@@ -1,0 +1,25 @@
+# src/main/resources/que.yml
+qube:
+  node:
+    id: "qube-001"                                              # 节点唯一ID
+    root-dir: "/home/qubechain"                                 # 应用根路径（你只改这一行！！！）
+    
+    # ============ 自动派生的路径（你永远不用改！！！） ============
+    data-dir: "${qube.node.root-dir}/data"                     # 历史容器主目录（所有节点同步的容器）
+    container-dir: "${qube.node.root-dir}/containers"          # 当前节点生产的容器（10分钟一个）
+    cache-dir: "${qube.node.root-dir}/cache"                    # 本地账户缓存、状态树、临时索引
+    broadcast-out: "${qube.node.root-dir}/broadcast/out"       # 待广播容器缓存（广播完删除）
+    broadcast-rec: "${qube.node.root-dir}/broadcast/rec"       # 接收到的容器缓存（验证后移动到data-dir）
+    wallet-dir: "${qube.node.root-dir}/wallet"                 # 节点钱包（加密私钥）
+    log-dir: "${qube.node.root-dir}/logs"                      # 日志目录
+
+  chain:
+    container-seal-minutes: 10
+    genesis-supply: 1000000000                                  # 10亿FC
+
+server:
+  port: 8080
+
+logging:
+  path: "${qube.node.log-dir}"
+  file.name: "${qube.node.log-dir}/qubechain.log"
