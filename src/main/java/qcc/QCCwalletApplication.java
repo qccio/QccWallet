@@ -1,30 +1,28 @@
 package qcc;   // 你现在的包名保持不变
 
 import com.alibaba.fastjson2.*;
+import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import qcc.config.QCCPath;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.scheduling.annotation.EnableScheduling;   // 这行必须加！开启定时任务
 import qcc.core.qccData.TransactionData;
-import qcc.protocol.QccDataProtocol;
+import qcc.core.qccData.QccDataProtocol;
 import qcc.util.LogObj;
 import qcc.util.ToolsUtil;
-import qcc.wallet.QccWallet;
-
-import java.io.FileWriter;
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.time.LocalDateTime;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import qcc.wallet.QccWallet;
+import qcc.wallet.WalletUtil;
+
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -98,7 +96,7 @@ public class QCCwalletApplication {
         System.out.println("========== ✨ Genesis Wallet Generate ✨ ==========");
         for (int i = 0; i < count; i++) {
             // 创建钱包对象
-            QccWallet wallet = QccWallet.creatQccWallet();
+            QccWallet wallet = WalletUtil.createWallet();
             JSONObject w = new JSONObject();
             w.put("index", i);
             w.put("address", wallet.address);
@@ -173,7 +171,7 @@ public class QCCwalletApplication {
             QccWallet to,
             long amount,
             String assetId
-    ) {
+    ) throws CryptoException {
         String packetJson = buildPacket(from, to, amount, assetId);
         LogObj.println("交易数据string:"+packetJson);
         if(!packetJson.isEmpty()) return null;
@@ -191,7 +189,7 @@ public class QCCwalletApplication {
     // =========================
     // 构建交易包（通用资产）
     // =========================
-    private static String buildPacket(QccWallet from, QccWallet to, long amount, String assetId) {
+    private static String buildPacket(QccWallet from, QccWallet to, long amount, String assetId) throws CryptoException {
         TransactionData data = new TransactionData();
         data.id = ToolsUtil.getUUID();
         data.from = from.address;
